@@ -1,34 +1,32 @@
 package pluginloader
 
 import (
-	"fmt"
 	"gotune/workflowmanager/models"
-	"os"
+	"log"
 	"plugin"
 )
 
 var setupPluginList []string = []string{"./plugin/setup/setup.so"}
+var setupVar []string = []string{"Setup"}
 
-func LoadSetupPlugins() (pluginList []models.SetupPlugin) {
-	for _, setupPlugin := range setupPluginList {
+func LoadSetupPlugins() (pluginList []models.SetupPlugin, err error) {
+	for i, setupPlugin := range setupPluginList {
 		plugin, err := plugin.Open(setupPlugin)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			log.Fatal("plugin directory open failed: ", err)
+			return nil, err
 		}
 
-		//name convention
-		//upper case first letter of plugin name
-		setupPlugin, err := plugin.Lookup("Setup")
+		setupPlugin, err := plugin.Lookup(setupVar[i])
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			log.Fatal("plugin lookup failed: ", err)
+			return nil, err
 		}
 
 		setupInterface, ok := setupPlugin.(models.SetupPlugin)
 		if !ok {
-			fmt.Println("unexpected type from module symbol")
-			os.Exit(1)
+			log.Fatalf("unexpected type from module symbol")
+			return nil, err
 		}
 		pluginList = append(pluginList, setupInterface)
 	}

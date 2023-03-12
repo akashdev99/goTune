@@ -2,80 +2,71 @@ package configmanager
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"sync"
 
 	"gopkg.in/yaml.v2"
 )
 
-type configmap map[string][]map[string]interface{}
+type ConfigList []map[string]interface{}
 
 type ConfigManager struct {
-	config configmap
+	Config          ConfigList `yaml:"config"`
+	ConfigDirectory string     `yaml:"configDirectory"`
 }
 
 var (
-	ConfigMgr ConfigManager
+	ConfigMgr *ConfigManager
 	err       error
+	once      sync.Once
 )
 
-func init() {
-	//Init or singleton load ???
-	err = load()
+func GetInstance() (*ConfigManager, error) {
+	var err error
+
+	once.Do(func() {
+		ConfigMgr = &ConfigManager{}
+		err = ConfigMgr.load()
+	})
+	return ConfigMgr, err
 }
 
-const FILE_DIR = "./configmanager/config.yaml"
+var FILE_DIR = "./configmanager/config.yaml"
 
-func load() error {
+func (c *ConfigManager) load() error {
 	file, err := ioutil.ReadFile(FILE_DIR)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	config := make(map[string][]map[string]interface{})
-	err = yaml.Unmarshal(file, &config)
+	err = yaml.Unmarshal(file, c)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Not compatible", err)
 	}
-
-	ConfigMgr.config = config
-	if !ConfigMgr.validateConfig() {
-		return errors.New("config load failed")
+	if isValid, err := c.validateConfig(); !isValid {
+		c = &ConfigManager{}
+		return fmt.Errorf("config load failed :%v", err)
 	}
 	return nil
 }
 
-func (configmgr ConfigManager) GetConfig() (configmap, error) {
-	if err != nil {
-		return nil, err
-	}
-	return configmgr.config, nil
-}
-
-func (configmgr ConfigManager) validateConfig() bool {
+func (configmgr ConfigManager) validateConfig() (bool, error) {
 	//check if all config object has equal number of keys - uniform config (maye blater make it take default vlaues)
-	return isUniformPropertCount(configmgr.config["config"])
+	return configmgr.isUniformPropertCount()
 }
 
-func isUniformPropertCount(configList []map[string]interface{}) bool {
+func (configmgr ConfigManager) isUniformPropertCount() (bool, error) {
+	configList := configmgr.Config
 	propCount := len(configList[0])
 
 	tempCount := 0
 	for _, config := range configList {
 		tempCount = len(config)
 		if tempCount != propCount {
-			return false
+			return false, errors.New("uniform number of properties not found")
 		}
 	}
-	return true
+	return true, nil
 }
-
-// func printData(data map[string][]map[string]interface{}) {
-// 	for _, v := range data {
-// 		for _, arrayItem := range v {
-// 			for k1, v1 := range arrayItem {
-// 				fmt.Printf("%s -> %d\n", k1, v1)
-// 			}
-// 		}
-// 	}
-// }
