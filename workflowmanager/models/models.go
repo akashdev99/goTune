@@ -2,7 +2,7 @@ package models
 
 type SetupPlugin interface {
 	Description()
-	Setup(map[string]interface{}, string)
+	Setup(map[string]interface{}, string) error
 }
 
 type StressPlugin interface {
