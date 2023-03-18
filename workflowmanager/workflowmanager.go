@@ -3,7 +3,7 @@ package workflowmanager
 import (
 	"fmt"
 	"gotune/configmanager"
-	"gotune/workflowmanager/pluginloader"
+	"gotune/plugin/setup"
 	"log"
 )
 
@@ -20,7 +20,7 @@ func Start() error {
 
 		//SETUP STAGE
 		//plugin load setup
-		if err := setup(config, dir); err != nil {
+		if err := setupStage(config, dir); err != nil {
 			return err
 		}
 
@@ -31,16 +31,19 @@ func Start() error {
 	return nil
 }
 
-func setup(config map[string]interface{}, dir string) error {
-	setupPluginList, err := pluginloader.LoadSetupPlugins()
-	if err != nil {
-		return err
-	}
+func setupStage(config map[string]interface{}, dir string) error {
+	// setupPluginList, err := pluginloader.LoadSetupPlugins()
+	// if err != nil {
+	// 	return err
+	// }
+	// for _, setupPlugins := range setupPluginList {
+	// 	if err := setupPlugins.Setup(config, dir); err != nil {
+	// 		return err
+	// 	}
+	// }
 
-	for _, setupPlugins := range setupPluginList {
-		if err := setupPlugins.Setup(config, dir); err != nil {
-			return err
-		}
+	if err := setup.SetupInstance.Setup(config, dir); err != nil {
+		return err
 	}
 
 	fmt.Println("DONE")

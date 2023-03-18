@@ -1,4 +1,4 @@
-package main
+package setup
 
 import (
 	"bufio"
@@ -60,7 +60,7 @@ func reloadHms() error {
 	cmd := exec.Command("pmtool restartbyid hms")
 
 	if err := cmd.Run(); err != nil {
-		log.Fatal("hms restart failed")
+		log.Fatal("hms restart failed", err)
 		return err
 	}
 	return nil
@@ -93,4 +93,4 @@ func (s SetupStage) Description() {
 	fmt.Println("the plugin will setup the stress system for perfromance testing")
 }
 
-var Setup SetupStage
+var SetupInstance SetupStage
