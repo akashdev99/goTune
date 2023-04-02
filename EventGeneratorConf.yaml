@@ -1,0 +1,8 @@
+devices: 2
+total_alerts: 30
+critical_alerts_percent: 100
+warning_alerts_percent: 0
+interval_second: 10
+# default 0 : infinite
+lifetime_minute: 1
+exclude_percent: 0

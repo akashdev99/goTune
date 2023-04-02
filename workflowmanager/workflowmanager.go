@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gotune/configmanager"
 	"gotune/plugin/report"
+	"gotune/plugin/stress"
 	"log"
 )
 
@@ -24,13 +25,29 @@ func Start() error {
 			return err
 		}
 
-		//REPORT STAGE
-		if err := report.ReportInstance.Sample(configMgr.ReporterLife, configMgr.ReporterInterval); err != nil {
+		//REPORT STAGE -PARALLELIZE
+		//get error via channels
+
+		// stressChan := make(chan error)
+		go report.ReportInstance.Sample(configMgr.ReporterLife, configMgr.ReporterInterval)
+		go stress.ReportInstance.Stress(configMgr.ReporterLife)
+
+		if err := <-report.ReportInstance.SampleChan; err != nil {
+			log.Fatalf("GOTUNE: Sampling failed :%v", err)
 			return err
+		} else {
+			fmt.Println("Sampling Done")
+		}
+
+		if err := <-stress.ReportInstance.StressChan; err != nil {
+			log.Fatalf("GOTUNE: Stressing failed :%v", err)
+			return err
+		} else {
+			fmt.Println("Stressing Done")
 		}
 
 	}
-	// 6) run event generator
+
 	//kill the process
 	//loop again
 	return nil

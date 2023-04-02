@@ -1,7 +1,8 @@
 configDirectory: "./hms.conf"
 # seconds
-reporterLife: 3600
-reporterInterval: 5
+reporterLife:  60
+# seconds
+reporterInterval: 1
 config:
 - MAX_CONCURRENT_PROCESSORS: 10
   PROCESSOR_BUCKET_SIZE: 20

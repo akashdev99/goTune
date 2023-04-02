@@ -75,17 +75,6 @@ func (s SetupStage) Setup(config map[string]interface{}, dir string) error {
 	if err := reloadHms(); err != nil {
 		return err
 	}
-	//4) build hms binary
-
-	//MOVE TO REPORTER
-	// 1) run hms_tool
-	//2)run pprof cpu start
-	// 5)start HMS
-
-	// fmt.Println("setup done")
-
-	//loop through the config and run the daemon
-	//stages
 	return nil
 }
 
