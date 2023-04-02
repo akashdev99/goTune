@@ -57,7 +57,7 @@ func makeConfiguration(config map[string]interface{}, dir string) error {
 }
 
 func reloadHms() error {
-	cmd := exec.Command("pmtool restartbyid hms")
+	cmd := exec.Command("pmtool", "restartbyid", "hms")
 
 	if err := cmd.Run(); err != nil {
 		log.Fatal("hms restart failed", err)

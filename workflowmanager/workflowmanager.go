@@ -3,7 +3,7 @@ package workflowmanager
 import (
 	"fmt"
 	"gotune/configmanager"
-	"gotune/plugin/setup"
+	"gotune/plugin/report"
 	"log"
 )
 
@@ -21,6 +21,11 @@ func Start() error {
 		//SETUP STAGE
 		//plugin load setup
 		if err := setupStage(config, dir); err != nil {
+			return err
+		}
+
+		//REPORT STAGE
+		if err := report.ReportInstance.Sample(configMgr.ReporterLife, configMgr.ReporterInterval); err != nil {
 			return err
 		}
 
@@ -42,10 +47,14 @@ func setupStage(config map[string]interface{}, dir string) error {
 	// 	}
 	// }
 
-	if err := setup.SetupInstance.Setup(config, dir); err != nil {
-		return err
-	}
+	// if err := setup.SetupInstance.Setup(config, dir); err != nil {
+	// 	return err
+	// }
 
 	fmt.Println("DONE")
 	return nil
+}
+
+func reportStage() {
+
 }

@@ -13,8 +13,10 @@ import (
 type ConfigList []map[string]interface{}
 
 type ConfigManager struct {
-	Config          ConfigList `yaml:"config"`
-	ConfigDirectory string     `yaml:"configDirectory"`
+	Config           ConfigList `yaml:"config"`
+	ConfigDirectory  string     `yaml:"configDirectory"`
+	ReporterLife     int        `yaml:"reporterLife"`
+	ReporterInterval int        `yaml:"reporterInterval"`
 }
 
 var (
