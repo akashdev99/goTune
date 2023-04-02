@@ -29,7 +29,7 @@ func Start() error {
 		//get error via channels
 
 		// stressChan := make(chan error)
-		go report.ReportInstance.Sample(configMgr.ReporterLife, configMgr.ReporterInterval)
+		go report.ReportInstance.Sample(configMgr.ReporterLife, configMgr.ReporterInterval, config)
 		go stress.ReportInstance.Stress(configMgr.ReporterLife)
 
 		if err := <-report.ReportInstance.SampleChan; err != nil {
@@ -72,6 +72,6 @@ func setupStage(config map[string]interface{}, dir string) error {
 	return nil
 }
 
-func reportStage() {
+// func reportStage() {
 
-}
+// }

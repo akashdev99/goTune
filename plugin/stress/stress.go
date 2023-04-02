@@ -30,7 +30,6 @@ func (s ReportStage) Stress(life int) error {
 	wg.Add(1)
 	go s.startHmsEventGenrator()
 	wg.Wait()
-	fmt.Println("Done stress")
 	return nil
 }
 

@@ -14,16 +14,10 @@ type ReportStage struct {
 
 var wg sync.WaitGroup
 
-// func (s ReportStage) waitAndKill(life int) {
-// 	time.Sleep(time.Second * time.Duration(life+5))
+func (s ReportStage) startHmsTool(life int, interval int, config map[string]interface{}) {
+	fileName := fmt.Sprintf("HMS_TOOL__PROCCESSOR_%v_BUCKET_%v", config["MAX_CONCURRENT_PROCESSORS"], config["PROCESSOR_BUCKET_SIZE"])
 
-// 	s.SampleChan <- nil
-// 	wg.Done()
-// 	fmt.Println("Done and killed")
-// }
-
-func (s ReportStage) startHmsTool(life int, interval int) {
-	cmd := exec.Command("hms_tool", "-stats", "system,hm", "-format", "csv", "-interval", strconv.Itoa(interval), "-life", strconv.Itoa(life))
+	cmd := exec.Command("hms_tool", "-stats", "system,hm", "-format", "csv", "-interval", strconv.Itoa(interval), "-life", strconv.Itoa(life), "-name", fileName)
 	fmt.Println("Sampling started")
 	if err := cmd.Run(); err != nil {
 		log.Fatal("failed to run hms_tool", err)
@@ -35,9 +29,9 @@ func (s ReportStage) startHmsTool(life int, interval int) {
 	wg.Done()
 }
 
-func (s ReportStage) Sample(life int, interval int) error {
+func (s ReportStage) Sample(life int, interval int, config map[string]interface{}) error {
 	wg.Add(1)
-	go s.startHmsTool(life, interval)
+	go s.startHmsTool(life, interval, config)
 	wg.Wait()
 	return nil
 }
